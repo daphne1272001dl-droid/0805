@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吴汉翔的专属小网站 ✨</title>
+    <style>
+        :root {
+            --primary-color: #ff7675;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: #2d3436;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            text-align: center;
+            position: relative;
+            background-color: #fff;
+            transition: background-color 3s ease; 
+        }
+
+        /* 背景图适配 */
+        .bg-layer {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("images/background.jpg") no-repeat center center/cover;
+            z-index: -2;
+            filter: blur(4px);
+            transform: scale(1.05);
+            transition: opacity 3s ease; 
+        }
+
+        /* 🌌 繁星海军蓝夜空层 */
+        .stars-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 3s ease;
+            /* 🛠️ 调整为更唯美的 Navy Blue 海军蓝渐变 */
+            background: radial-gradient(circle at 50% 40%, #0a1931, #040d1a, #02060d);
+        }
+        .stars-layer::before {
+            content: "";
+            position: absolute;
+            width: 3px; height: 3px;
+            background: white;
+            box-shadow: 20vw 10vh #fff, 40vw 30vh rgba(255,255,255,0.7), 70vw 15vh #fff, 85vw 45vh rgba(255,255,255,0.4), 15vw 70vh #fff, 50vw 80vh rgba(255,255,255,0.8), 80vw 75vh #fff, 30vw 90vh rgba(255,255,255,0.5), 95vw 20vh rgba(255,255,255,0.6), 5vw 50vh #fff;
+            animation: twinkle 2s infinite alternate;
+            border-radius: 50%;
+        }
+        @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* 烟花专用画布 */
+        canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 35px 25px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 2s ease; 
+            backdrop-filter: blur(10px);
+            z-index: 5;
+            opacity: 1;
+            margin: 20px 0;
+        }
+
+        .hidden { display: none !important; }
+        h1, h2, h3 { margin-bottom: 15px; line-height: 1.6; font-weight: bold; }
+        p { line-height: 1.8; margin-bottom: 15px; font-size: 16px; color: #4a4a4a; white-space: pre-line; }
+        
+        button {
+            padding: 12px 35px;
+            font-size: 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin: 15px 5px 5px 5px;
+            font-weight: bold;
+        }
+        button:hover { transform: scale(1.05); }
+        .btn-grey { background: #b2bec3; }
+        
+        .pulse-btn {
+            animation: pulse 1s infinite alternate;
+            background: #e67e22;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); box-shadow: 0 0 15px rgba(230, 126, 34, 0.6); }
+        }
+        
+        .calendar-input {
+            padding: 10px 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            margin: 15px 0;
+            outline: none;
+            background: white;
+            text-align: center;
+        }
+        .hint { font-size: 14px; color: #636e72; font-weight: bold; }
+        
+        .confirm-zone, .error-zone {
+            margin-top: 15px;
+            padding: 15px;
+            background: #ffeaa7;
+            border-radius: 10px;
+            border: 1px solid #f1c40f;
+        }
+        .error-zone {
+            background: #fab1a0;
+            border: 1px solid #ff7675;
+        }
+
+        .fade-in {
+            animation: fadeIn 1.5s forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .line-fade {
+            opacity: 0;
+            animation: fadeIn 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .box-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .gift-box {
+            width: 85px;
+            height: 85px;
+            background: #ff7675;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .gift-box span {
+            font-size: 12px;
+            color: white;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+        .gift-box.opened {
+            transform: scale(2.3);
+            z-index: 10;
+            position: fixed;
+            top: 40%;
+            left: calc(50% - 42.5px);
+            background: white;
+            border: 2px solid #ff7675;
+        }
+        .gift-box.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+        .gift-box.claimed {
+            background: #b2bec3 !important;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .content-display {
+            margin-top: 25px;
+            padding: 20px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 15px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+        }
+        .content-display img { max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; margin-top: 10px; }
+        .content-display video { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="bgLayer" class="bg-layer"></div>
+    <div id="starsLayer" class="stars-layer"></div>
+
+    <audio id="bgm" loop src="music/birthday.mp3"></audio>
+
+    <canvas id="fireworksCanvas"
+        style="
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        pointer-events:none;
+        z-index:999;
+    "></canvas>
+
+    <!-- 💌 第一段（进入页面） -->
+    <div id="step1" class="container">
+        <h1>欢迎来到吴汉翔的专属小网站 ✨</h1>
+        <p>这是你的小宝贝为你做的。</p>
+        <p style="font-weight: bold;">今天到底是什么特别的日子叻？</p>
+        <p style="font-size: 14px; color: #7f8c8d;">（提示：很重要的日子！）</p>
+        <button onclick="startExplore()">👉 继续探索</button>
+    </div>
+
+    <!-- 💌 第二段（选择日期） -->
+    <div id="step2" class="container hidden">
+        <h2>在进入下一关之前，让我来test下你：</h2>
+        <p>请选择今天的日期 🎂</p>
+        <input type="date" id="datePicker" class="calendar-input" min="2026-01-01" max="2026-12-31" value="2026-01-01" onchange="hideAllZones()">
+        <p class="hint">（小提示：今天有一个人又长大一岁啦）</p>
+        <p style="font-size: 14px; margin-top: 5px; color: #ff7675; font-weight: bold;">选对了才可以继续走哦。</p>
+        
+        <button id="submitBtn" onclick="showConfirmZone()">提交答案</button>
+
+        <div id="confirmZone" class="confirm-zone hidden">
+            <p style="color: #d63031; font-weight: bold; font-size: 17px; margin-bottom: 10px;">你确定吗？不要再想一下meh？</p>
+            <button onclick="verifyDate()">我confirm啦！</button>
+            <button class="btn-grey" onclick="hideConfirmZone()">hmmm再想一下咯</button>
+        </div>
+
+        <div id="errorZone" class="error-zone hidden">
+            <p style="color: #c0392b; font-weight: bold; font-size: 17px; margin-bottom: 10px;">❌ weihh 错了叻！罚你再看多一次~</p>
+            <button class="btn-grey" onclick="hideAllZones()">重新选择</button>
+        </div>
+    </div>
+
+    <!-- 💌 第三段（生日祝福 + 盲盒） -->
+    <div id="step3" class="container hidden">
+        <div id="blessingText" class="fade-in"></div>
+        <div id="boxes" class="box-container hidden">
+            <div class="gift-box" id="box1" onclick="openBox('box1')">🎁</div>
+            <div class="gift-box" id="box2" onclick="openBox('box2')">🎁</div>
+            <div class="gift-box" id="box3" onclick="openBox('box3')">🎁</div>
+        </div>
+        <div id="contentDisplay" class="content-display hidden"></div>
+        <button id="nextGiftBtn" class="hidden" onclick="resetAfterGift()"></button>
+    </div>
+
+    <!-- 💌 第七段（结尾） -->
+  <div id="step4" class="container hidden" style="text-align: center; max-width: 650px;">
+    <div id="finalLetter"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        let openedCount = 0; 
+        let activeBoxId = null; 
+
+        function startExplore() {
+            bgm.play().catch(() => { console.log("音乐自动播放被拦截"); });
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function showConfirmZone() {
+            document.getElementById('errorZone').classList.add('hidden');
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('confirmZone').classList.remove('hidden');
+        }
+
+        function hideConfirmZone() {
+            document.getElementById('confirmZone').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+        }
+
+        function hideAllZones() {
+            document.getElementById('confirmZone').classList.add('hidden');
+            document.getElementById('errorZone').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+        }
+
+        function verifyDate() {
+            const chosenDate = document.getElementById('datePicker').value;
+            if (chosenDate !== "2026-08-05") {
+                document.getElementById('confirmZone').classList.add('hidden');
+                document.getElementById('errorZone').classList.remove('hidden');
+            } else {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+                
+                const blessing = document.getElementById('blessingText');
+                blessing.innerHTML = `
+                    <h2 style="color: #ff7675; margin-bottom:10px;">答对啦 🎉</h2>
+                    <h3>生日快乐，吴汉翔。</h3>
+                    <p>其实我想说的不只是“生日快乐”这么简单。</p>
+                    <p>你对我来说，是那种很特别、也很值得被珍惜的人。</p>
+                    <p>所以今天，我准备了3个小礼物盲盒送给你 🎁</p>
+                    <p>希望你都喜欢hehe。</p>
+                    <p style="font-weight: bold; color: #ff7675;">请选择你的礼物吧～</p>
+                `;
+                setTimeout(() => {
+                    document.getElementById('boxes').classList.remove('hidden');
+                }, 1500);
+            }
+        }
+
+        function openBox(boxId) {
+            activeBoxId = boxId;
+            const currentBox = document.getElementById(boxId);
+            currentBox.classList.add('opened');
+            
+            document.querySelectorAll('.gift-box').forEach(box => {
+                if(box !== currentBox) box.classList.add('disabled');
+            });
+
+            const display = document.getElementById('contentDisplay');
+            const btn = document.getElementById('nextGiftBtn');
+            
+            setTimeout(() => {
+                display.classList.remove('hidden');
+                currentBox.style.opacity = '0'; 
+
+                if (openedCount === 0) {
+                    // 🛠️ 修复：已经改为优雅的 text-align: center (居中)
+                    display.innerHTML = `
+                        <h3>🎁 第一个礼物：小小的好运</h3>
+                        <p style="font-size:14px; margin-top:5px; text-align: center;">
+                        这是我想给你的小小心意。<br>
+                        可能不多，但希望它代表的是一种祝福。<br>
+                        希望你以后想要的东西，都可以慢慢拥有。<br>
+                        就当我偷偷给你存了一点好运气🤍<br><br>
+                        <span style="font-weight:bold; color: #ff7675;">（扫码看看你的好运吧 ✨）</span>
+                        </p>
+                        <img src="qr.png" alt="二维码">
+                    `;
+                    btn.className = ""; 
+                    btn.innerText = "收到啦 谢谢宝贝";
+                    btn.classList.remove('hidden');
+                } else if (openedCount === 1) {
+
+                // 🎵 暂停背景音乐
+                bgm.pause();
+
+                 display.innerHTML = `
+                    <h3>🎥 第二个礼物：我们的回忆</h3>
+                    <p style="font-size:14px; margin-top:5px; text-align: center;">
+                    跟你在一起的每个瞬间，我都很快乐。<br>
+                    这些照片拼起来，就是“我们”。<br>
+                    很感谢那些我们一起走过的日子。<br>
+                    我们还要一起走更远的路哦。
+                    </p>
+
+                <video id="memoryVideo" src="videos/birthday8.mp4" controls autoplay></video>
+                    `;
+
+
+                 // 🎬 获取video
+                 const video = document.getElementById("memoryVideo");
+
+                 // 视频播放结束后恢复音乐
+                video.addEventListener("ended", function(){
+
+                    bgm.play().catch(() => {
+                         console.log("音乐恢复播放失败");
+                        });
+
+                });
+
+                    btn.className = "";
+                    btn.innerText = "收到啦 谢谢宝贝";
+                    btn.classList.remove('hidden');
+                } else if (openedCount === 2) {
+                    display.innerHTML = `
+                        <h2 style="font-size: 40px; margin-bottom: 10px;">💨</h2>
+                        <h3 style="color: #7f8c8d;">eh 你的礼物叻？做么不见去</h3>
+                    `;
+                    btn.className = "pulse-btn";
+                    btn.innerText = "快点找！";
+                    btn.onclick = revealTrueThirdGift; 
+                    btn.classList.remove('hidden');
+                }
+            }, 500);
+        }
+
+        function revealTrueThirdGift() {
+            const display = document.getElementById('contentDisplay');
+            const btn = document.getElementById('nextGiftBtn');
+            display.classList.add('fade-in');
+            // 🛠️ 修复：已经改为优雅的 text-align: center (居中)
+            display.innerHTML = `
+                <h3>🎁 第三个礼物：暂时保密的惊喜</h3>
+                <p style="padding:10px 0; font-size:15px; line-height: 1.8; text-align: center;">
+                这个礼物不在这里打开。<br>
+                因为我想留到我们见面的时候再给你，<br><br>
+                所以现在先欠着你一份期待 🤍
+                </p>
+            `;
+            btn.className = "";
+            btn.innerText = "期待见面！";
+            btn.onclick = resetAfterGift; 
+        }
+
+        function resetAfterGift() {
+            openedCount++;
+            const openedBox = document.getElementById(activeBoxId);
+            if (openedBox) {
+                openedBox.classList.remove('opened');
+                openedBox.style.opacity = '1'; 
+                openedBox.classList.add('claimed');
+                openedBox.innerHTML = "🎁<br><span>已领取</span>";
+            }
+            document.querySelectorAll('.gift-box').forEach(box => {
+                if(!box.classList.contains('claimed')) box.classList.remove('disabled');
+            });
+            document.getElementById('contentDisplay').classList.add('hidden');
+            document.getElementById('nextGiftBtn').classList.add('hidden');
+
+            if (openedCount === 3) {
+                setTimeout(() => {
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('step4').classList.remove('hidden');
+                    typeWriterLetter();
+                }, 1500);
+            }
+        }
+
+        function typeWriterLetter() {
+            const finalLetter = document.getElementById('finalLetter');
+            const lines = [
+                { text: "最后，我想慢慢地、认真地跟你说一些话。", delay: 0 },
+                { text: "谢谢你出现在我的生活里。", delay: 3.0 },
+                { text: "和你在一起的这些时间里，我慢慢变得更安心。", delay: 6.0 },
+                { text: "我希望你以后的人生，是轻松一点的，是顺利一点的，", delay: 9.5 },
+                { text: "是你想要的东西都慢慢靠近你。", delay: 12.5 },
+                { text: "你要一直健康、自由、快乐。", delay: 15.5 },
+                { text: "期待我们下一次见面啦。", delay: 18.5 },
+                { text: "<br><span style='font-weight: bold;'>最后最后，</span>", delay: 21.0 },
+                { text: "<h2 style='color:black;margin-top:20px;font-size:34px;'>生日快乐，我的男孩，吴汉翔 🤍</h2>", delay: 23.5 }
+            ];
+
+            lines.forEach(item => {
+                const p = document.createElement('p');
+                p.className = 'line-fade';
+                p.style.animationDelay = `${item.delay}s`; 
+                p.innerHTML = item.text;
+                finalLetter.appendChild(p);
+            });
+
+            setTimeout(() => {
+                startConfetti();
+            }, 24000);
+        }
+
+function startConfetti() {
+
+    const duration = 8000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+
+        // 左边喷
+        confetti({
+            particleCount: 6,
+            angle: 60,
+            spread: 70,
+            origin: { x: 0 },
+            scalar: 1.1
+        });
+
+        // 右边喷
+        confetti({
+            particleCount: 6,
+            angle: 120,
+            spread: 70,
+            origin: { x: 1 },
+            scalar: 1.1
+        });
+
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+
+    })();
+
+}
+
+    </script>
+</body>
+</html>
